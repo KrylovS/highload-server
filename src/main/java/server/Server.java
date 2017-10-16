@@ -25,7 +25,7 @@ public class Server {
     private int cpuLimit;
 
     public Server (ServerConfig serverConfig) {
-        this.root = "/home/sergey/Highload/http-test-suite";//serverConfig.getRoot();
+        this.root = serverConfig.getRoot();
         this.cpuLimit = serverConfig.getCpuLimit();
         this.port = serverConfig.getPort();
     }
