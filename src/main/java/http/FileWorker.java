@@ -56,7 +56,7 @@ public class FileWorker {
         return file.canRead();
     }
 
-    public long fileSize(){
+    public long fileSize() {
         return file.length();
     }
 

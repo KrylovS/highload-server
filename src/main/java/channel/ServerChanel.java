@@ -26,7 +26,7 @@ public class ServerChanel extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws IOException {
         try {
             request = new Request((String) msg);
             response = new Response(request);
@@ -34,23 +34,14 @@ public class ServerChanel extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
         }
         final ChannelFuture channelfuture = ctx.pipeline().writeAndFlush(Unpooled.copiedBuffer(response.getResponseAnswer().getBytes()));
-        //if (!response.isTextFile()) {
         if (response.needWriteFile()) {
-            //final RandomAccessFile file;
-            try (final RandomAccessFile file = new RandomAccessFile(response.getFullPath(), "r")) {
-                //file = new RandomAccessFile(response.getFullPath(), "r");
-                long length = 0;
-                try{
-                    length = file.length();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ctx.writeAndFlush(new DefaultFileRegion(file.getChannel(), 0, length));
+            try {
+                ctx.writeAndFlush(new DefaultFileRegion(response.getFileWorker().getFile().getChannel(), 0,
+                        response.getFileWorker().fileSize()));
             } catch (FileNotFoundException ignored) {}
         }
         channelfuture.addListener(ChannelFutureListener.CLOSE);
     }
-        //super.channelRead(ctx, msg);
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

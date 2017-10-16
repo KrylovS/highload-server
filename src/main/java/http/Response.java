@@ -136,6 +136,10 @@ public class Response {
         return path;
     }
 
+    public FileWorker getFileWorker() {
+        return fileWorker;
+    }
+
     public boolean needWriteFile() {
         return status.equals(STATUS_OK) && request.getMethod().equals(METHOD_GET);
     }
